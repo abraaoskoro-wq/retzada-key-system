@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1789498366066,
+      "tag": "0000_volatile_phil_sheldon",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1789498556105,
+      "tag": "0001_living_susan_delgado",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1789499889371,
+      "tag": "0002_unique_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1789501502928,
+      "tag": "0003_stormy_iceman",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1789502231465,
+      "tag": "0004_thin_mathemanic",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1789503964867,
+      "tag": "0005_supreme_young_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1789505510899,
+      "tag": "0006_productive_mauler",
+      "breakpoints": true
+    }
+  ]
+}

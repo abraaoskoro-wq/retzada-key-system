@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `accountStatus` enum('pending','approved') DEFAULT 'approved' NOT NULL;

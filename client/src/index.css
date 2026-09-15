@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  color: #e7e7eb;
+  background: #0b0b0e;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; margin: 0; }
+body { min-width: 320px; background: #0b0b0e; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+::selection { color: white; background: #e21b2d; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-rise { animation: rise .35s ease-out both; }
+
+.surface { background: linear-gradient(145deg, rgba(28,28,33,.96), rgba(17,17,21,.96)); border: 1px solid rgba(255,255,255,.075); box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+.input-dark { width: 100%; border: 1px solid rgba(255,255,255,.1); background: #101014; color: #f4f4f5; border-radius: 12px; padding: .75rem .9rem; outline: none; transition: border-color .18s, box-shadow .18s; }
+.input-dark:focus { border-color: #ed1c2f; box-shadow: 0 0 0 3px rgba(237,28,47,.12); }
+.btn-red { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 12px; background: #ed1c2f; color: white; font-weight: 700; padding: .75rem 1rem; transition: transform .16s, background .16s; }
+.btn-red:hover { background: #ff263a; }
+.btn-red:active { transform: scale(.97); }
+.btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgba(255,255,255,.09); border-radius: 12px; color: #a9a9b2; padding: .7rem .9rem; transition: color .16s, background .16s; }
+.btn-ghost:hover { color: #fff; background: rgba(255,255,255,.06); }
+
+
+/* Personalização de cor e refinamento visual */
+:root { --accent: #ed1c2f; --accent-hover: #ff263a; --accent-soft: rgba(237,28,47,.14); }
+:root[data-accent="blue"] { --accent: #3b82f6; --accent-hover: #60a5fa; --accent-soft: rgba(59,130,246,.14); }
+:root[data-accent="purple"] { --accent: #8b5cf6; --accent-hover: #a78bfa; --accent-soft: rgba(139,92,246,.14); }
+:root[data-accent="cyan"] { --accent: #06b6d4; --accent-hover: #22d3ee; --accent-soft: rgba(6,182,212,.14); }
+:root[data-accent="green"] { --accent: #22c55e; --accent-hover: #4ade80; --accent-soft: rgba(34,197,94,.14); }
+:root[data-accent="amber"] { --accent: #f59e0b; --accent-hover: #fbbf24; --accent-soft: rgba(245,158,11,.14); }
+:root[data-accent="pink"] { --accent: #ec4899; --accent-hover: #f472b6; --accent-soft: rgba(236,72,153,.14); }
+body { background: radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30rem), #0b0b0e; }
+.btn-red { background: var(--accent); box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 20%, transparent); }
+.btn-red:hover { background: var(--accent-hover); }
+.input-dark:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+::selection { background: var(--accent); }
+[class~="text-[#ed1c2f]"], [class~="text-[#ff4353]"], [class~="text-[#ff334b]"] { color: var(--accent) !important; }
+[class~="bg-[#ed1c2f]"] { background-color: var(--accent) !important; }
+[class~="bg-[#ed1c2f]/10"] { background-color: var(--accent-soft) !important; }
+[class~="border-[#ed1c2f]"], [class~="border-l-2"] { border-color: var(--accent) !important; }
+.surface { box-shadow: 0 22px 60px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.025); }
+.btn-copy, .accent-trigger { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 1px solid color-mix(in srgb, var(--accent) 35%, rgba(255,255,255,.12)); border-radius: 10px; color: var(--accent); background: var(--accent-soft); padding: .5rem .65rem; font-size: .72rem; font-weight: 700; transition: transform .16s, background .16s, color .16s; }
+.btn-copy:hover, .accent-trigger:hover { color: white; background: color-mix(in srgb, var(--accent) 25%, transparent); transform: translateY(-1px); }
+.accent-menu { position: absolute; right: 0; top: calc(100% + .6rem); z-index: 40; display: none; width: 150px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: #17171c; padding: .4rem; box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+.group:hover .accent-menu, .group:focus-within .accent-menu { display: block; }
+.accent-option { display: flex; width: 100%; align-items: center; gap: .6rem; border-radius: 9px; padding: .55rem .6rem; color: #c7c7ce; font-size: .75rem; font-weight: 600; text-align: left; }
+.accent-option:hover { background: rgba(255,255,255,.07); color: white; }
+
+
+/* Identidade RETZADA */
+.brand-logo-wrap { width: 40px; height: 40px; flex: 0 0 auto; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 45%, rgba(255,255,255,.12)); border-radius: 12px; background: #0b0b0e; box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 22%, transparent); }
+.brand-logo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+@media (min-width: 640px) { .brand-logo-wrap { width: 42px; height: 42px; } }
