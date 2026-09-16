@@ -17,11 +17,6 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next({ ctx });
 });
 
-function createKey(category: string) {
-  const compact = () => randomBytes(2).toString("hex").toUpperCase();
-  return `FFH4X-${category.slice(0, 3).toUpperCase()}-${compact()}-${compact()}-${compact()}`;
-}
-
 export function parseImportedCodes(content: string) {
   return Array.from(new Set(
     content
@@ -150,27 +145,6 @@ export const appRouter = router({
         await writeAudit(ctx.user.id, "create_product", `Produto ${input.name} criado`);
         return { success: true } as const;
       }),
-    addStock: adminProcedure
-      .input(z.object({ productId: z.number().int().positive(), quantity: z.number().int().min(1).max(1000000) }))
-      .mutation(async ({ ctx, input }) => {
-        const db = await getDb();
-        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível." });
-        const product = (await db.select().from(products).where(eq(products.id, input.productId)).limit(1))[0];
-        if (!product) throw new TRPCError({ code: "NOT_FOUND", message: "Produto não encontrado." });
-        const generated = Array.from({ length: input.quantity }, () => ({
-          code: createKey(product.category),
-          productId: product.id,
-          productName: product.name,
-          durationDays: product.durationDays,
-          status: "available" as const,
-        }));
-        await db.transaction(async tx => {
-          await tx.insert(keys).values(generated);
-          await tx.update(products).set({ stock: sql`${products.stock} + ${input.quantity}` }).where(eq(products.id, input.productId));
-        });
-        await writeAudit(ctx.user.id, "add_stock", `${input.quantity} unidades adicionadas ao produto #${input.productId}`);
-        return { success: true, added: input.quantity } as const;
-      }),
     importKeys: adminProcedure
       .input(z.object({ productId: z.number().int().positive(), content: z.string().trim().min(1).max(200000) }))
       .mutation(async ({ ctx, input }) => {
@@ -183,7 +157,7 @@ export const appRouter = router({
         const existing = await db.select({ code: keys.code }).from(keys).where(inArray(keys.code, codes));
         const existingCodes = new Set(existing.map(item => item.code));
         const fresh = codes.filter(code => !existingCodes.has(code));
-        if (!fresh.length) throw new TRPCError({ code: "CONFLICT", message: "Todas as keys coladas já estão no estoque." });
+        if (!fresh.length) throw new TRPCError({ code: "CONFLICT", message: `A key ${codes[0]} já foi cadastrada. Cole uma key nova e exclusiva.` });
         await db.transaction(async tx => {
           await tx.insert(keys).values(fresh.map(code => ({ code, productId: product.id, productName: product.name, durationDays: product.durationDays })));
           await tx.update(products).set({ stock: sql`${products.stock} + ${fresh.length}` }).where(eq(products.id, product.id));
