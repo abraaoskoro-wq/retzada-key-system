@@ -155,11 +155,21 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const db = await getDb();
         if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível." });
-        const product = (await db.select({ id: products.id }).from(products).where(eq(products.id, input.productId)).limit(1))[0];
+        const product = (await db.select().from(products).where(eq(products.id, input.productId)).limit(1))[0];
         if (!product) throw new TRPCError({ code: "NOT_FOUND", message: "Produto não encontrado." });
-        await db.update(products).set({ stock: sql`${products.stock} + ${input.quantity}` }).where(eq(products.id, input.productId));
+        const generated = Array.from({ length: input.quantity }, () => ({
+          code: createKey(product.category),
+          productId: product.id,
+          productName: product.name,
+          durationDays: product.durationDays,
+          status: "available" as const,
+        }));
+        await db.transaction(async tx => {
+          await tx.insert(keys).values(generated);
+          await tx.update(products).set({ stock: sql`${products.stock} + ${input.quantity}` }).where(eq(products.id, input.productId));
+        });
         await writeAudit(ctx.user.id, "add_stock", `${input.quantity} unidades adicionadas ao produto #${input.productId}`);
-        return { success: true } as const;
+        return { success: true, added: input.quantity } as const;
       }),
     importKeys: adminProcedure
       .input(z.object({ productId: z.number().int().positive(), content: z.string().trim().min(1).max(200000) }))
