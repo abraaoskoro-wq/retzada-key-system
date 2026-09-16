@@ -145,6 +145,18 @@ export const appRouter = router({
         await writeAudit(ctx.user.id, "create_product", `Produto ${input.name} criado`);
         return { success: true } as const;
       }),
+    updateProduct: adminProcedure
+      .input(z.object({ id: z.number().int().positive(), name: z.string().trim().min(2).max(120), category: z.string().trim().min(2).max(80), durationDays: z.number().int().min(1).max(3650) }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível." });
+        const target = (await db.select({ id: products.id }).from(products).where(eq(products.id, input.id)).limit(1))[0];
+        if (!target) throw new TRPCError({ code: "NOT_FOUND", message: "Produto não encontrado." });
+        await db.update(products).set({ name: input.name, category: input.category, durationDays: input.durationDays }).where(eq(products.id, input.id));
+        await db.update(keys).set({ productName: input.name, durationDays: input.durationDays }).where(eq(keys.productId, input.id));
+        await writeAudit(ctx.user.id, "update_product", `Produto #${input.id} atualizado`);
+        return { success: true } as const;
+      }),
     importKeys: adminProcedure
       .input(z.object({ productId: z.number().int().positive(), content: z.string().trim().min(1).max(200000) }))
       .mutation(async ({ ctx, input }) => {
@@ -192,6 +204,19 @@ export const appRouter = router({
       if (!db) return [];
       return db.select({ id: users.id, name: users.name, email: users.email, role: users.role, accountStatus: users.accountStatus, lastSignedIn: users.lastSignedIn }).from(users).orderBy(desc(users.lastSignedIn)).limit(100);
     }),
+    updateUserRole: adminProcedure
+      .input(z.object({ id: z.number().int().positive(), role: z.enum(["user", "admin", "reseller"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Banco de dados indisponível." });
+        if (input.id === ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Você não pode alterar o próprio nível de acesso." });
+        const target = (await db.select({ id: users.id, email: users.email }).from(users).where(eq(users.id, input.id)).limit(1))[0];
+        if (!target) throw new TRPCError({ code: "NOT_FOUND", message: "Usuário não encontrado." });
+        if (target.email?.toLowerCase() === OWNER_EMAIL) throw new TRPCError({ code: "FORBIDDEN", message: "O proprietário não pode ter o acesso alterado." });
+        await db.update(users).set({ role: input.role, accountStatus: "approved" }).where(eq(users.id, input.id));
+        await writeAudit(ctx.user.id, "update_user_role", `Usuário #${input.id}: ${input.role}`);
+        return { success: true } as const;
+      }),
     approveUser: adminProcedure
       .input(z.object({ id: z.number().int().positive() }))
       .mutation(async ({ ctx, input }) => {
