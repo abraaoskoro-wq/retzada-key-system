@@ -90,7 +90,7 @@ export const appRouter = router({
       return { redeemed: redeemed.length, openTickets: openTickets.length };
     }),
     myKeys: protectedProcedure.query(({ ctx }) => getKeysForUser(ctx.user.id)),
-    products: protectedProcedure.query(async () => (await getProducts()).filter(product => product.stock > 0)),
+    products: protectedProcedure.query(() => getProducts()),
     announcements: protectedProcedure.query(async () => {
       const db = await getDb();
       return db ? db.select().from(announcements).orderBy(desc(announcements.createdAt)).limit(20) : [];

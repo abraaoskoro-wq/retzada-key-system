@@ -43,5 +43,3 @@ if old not in text:
     raise SystemExit('stock mutation not found')
 text = text.replace(old, new, 1)
 home.write_text(text)
-PY
-python3 /tmp/ffh4x-key-system-inspect/scripts/fix-catalog-navigation-stock.py
