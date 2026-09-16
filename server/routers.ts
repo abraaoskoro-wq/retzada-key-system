@@ -91,6 +91,10 @@ export const appRouter = router({
     }),
     myKeys: protectedProcedure.query(({ ctx }) => getKeysForUser(ctx.user.id)),
     products: protectedProcedure.query(async () => (await getProducts()).filter(product => product.stock > 0)),
+    announcements: protectedProcedure.query(async () => {
+      const db = await getDb();
+      return db ? db.select().from(announcements).orderBy(desc(announcements.createdAt)).limit(20) : [];
+    }),
     generatedKeys: protectedProcedure.query(async ({ ctx }) => {
       const db = await getDb();
       if (!db) return [];
